@@ -122,4 +122,5 @@ echo "$(tput setaf 2)
    '~ .~~~. ~'    Weather............: `curl -s "http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=EUR|gr|heraklion" | sed -n '/Currently:/ s/.*: \(.*\): \([0-9]*\)\([CF]\).*/\2°\3, \1/p'`
        '~'	  CPU Temp...........: $(extend "$(/opt/vc/bin/vcgencmd measure_temp | cut -c "6-9")ºC")
 		  OpenVpn Clients....: ${vpnclients}
+		  Users..............: "`who | wc -l` Users are Login"
 $(tput sgr0)"
