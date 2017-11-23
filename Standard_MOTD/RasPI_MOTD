@@ -1,3 +1,18 @@
+#!	/usr/bin/env bash
+#
+#  Dynamic Script for RaspberryPi
+#
+#  Usage:
+#  Put this script in /etc/profile.d/
+#
+#  (C) Nikos Isaris 2017
+#  Published under the GPL V2
+#  Version 0.1
+#
+#
+
+
+
 function extend (){
   local str="$1"
   let spaces=60-${#1}
