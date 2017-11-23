@@ -118,9 +118,10 @@ echo "$(tput setaf 2)
  ~ (   ) (   ) ~  Memory.............: $(extend "$(free -m | awk 'NR==2 { printf "Total: %sMB, Used: %sMB, Free: %sMB",$2,$3,$4; }')")
 ( : '~'.~.'~' : ) Load Averages......: ${one}, ${five}, ${fifteen} (1, 5, 15 min)
  ~ .~ (   ) ~. ~  Running Processes..: `ps ax | wc -l | tr -d " "`
-  (  : '~' :  )   Public IP..........: ${publicip}
-   '~ .~~~. ~'    Weather............: `curl -s "http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=EUR|gr|heraklion" | sed -n '/Currently:/ s/.*: \(.*\): \([0-9]*\)\([CF]\).*/\2°\3, \1/p'`
-       '~'	  CPU Temp...........: $(extend "$(/opt/vc/bin/vcgencmd measure_temp | cut -c "6-9")ºC")
+  (  : '~' :  )   local IP...........: "`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'|grep -v '10.8'`"
+   '~ .~~~. ~'    Public IP..........: ${publicip} 
+       '~'	  Users..............: "`who | wc -l` Users are Login"
 		  OpenVpn Clients....: ${vpnclients}
-		  Users..............: "`who | wc -l` Users are Login"
+		  CPU Temp...........: $(extend "$(/opt/vc/bin/vcgencmd measure_temp | cut -c "6-9")ºC")
+		  Weather............: `curl -s "http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=EUR|gr|heraklion" | sed -n '/Currently:/ s/.*: \(.*\): \([0-9]*\)\([CF]\).*/\2°\3, \1/p'`
 $(tput sgr0)"
