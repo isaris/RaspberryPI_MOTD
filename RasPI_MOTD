@@ -1,0 +1,110 @@
+function extend (){
+  local str="$1"
+  let spaces=60-${#1}
+  while [ $spaces -gt 0 ]; do
+    str="$str "
+    let spaces=spaces-1
+  done
+  echo "$str"
+}
+
+function sec2time (){
+  local input=$1
+
+  if [ $input -lt 60 ]; then
+    echo "$input seconds"
+  else
+    ((days=input/86400))
+    ((input=input%86400))
+    ((hours=input/3600))
+    ((input=input%3600))
+    ((mins=input/60))
+
+    local daysPlural="s"
+    local hoursPlural="s"
+    local minsPlural="s"
+
+    if [ $days -eq 1 ]; then
+      daysPlural=""
+    fi
+
+    if [ $hours -eq 1 ]; then
+      hoursPlural=""
+    fi
+
+    if [ $mins -eq 1 ]; then
+      minsPlural=""
+    fi
+
+    echo "$days day$daysPlural, $hours hour$hoursPlural, $mins minute$minsPlural"
+  fi
+}
+
+function center (){
+  local str="$1"
+  let spacesLeft=(78-${#1})/2
+  let spacesRight=78-spacesLeft-${#1}
+  while [ $spacesLeft -gt 0 ]; do
+    str=" $str"
+    let spacesLeft=spacesLeft-1
+  done
+
+  while [ $spacesRight -gt 0 ]; do
+    str="$str "
+    let spacesRight=spacesRight-1
+  done
+
+  echo "$str"
+}
+
+
+
+
+let upSeconds="$(/usr/bin/cut -d. -f1 /proc/uptime)"
+let secs=$((${upSeconds}%60))
+let mins=$((${upSeconds}/60%60))
+let hours=$((${upSeconds}/3600%24))
+let days=$((${upSeconds}/86400))
+UPTIME=`printf "%d days, %02dh%02dm%02ds" "$days" "$hours" "$mins" "$secs"`
+uptime="$(sec2time $(cut -d "." -f 1 /proc/uptime))"
+uptime="$uptime ($(date -d "@"$(grep btime /proc/stat | cut -d " " -f 2) +"%d-%m-%Y %H:%M:%S"))"
+publicip="`wget http://ipecho.net/plain -O - -q ; echo`"
+vpnclients="`cat /home/nick/logs/vpnuser_status`"
+me=$(whoami)
+
+# get the load averages
+read one five fifteen rest < /proc/loadavg
+
+
+echo "
+                                                       
+$(tput setaf 1)                                                    
+                             _                          _
+             ___ ___ ___ ___| |_ ___ ___ ___ _ _    ___|_|      
+            |  _| .'|_ -| . | . | -_|  _|  _| | |  | . | |      
+            |_| |__,|___|  _|___|___|_| |_| |_  |  |  _|_|      
+                        |_|                 |___|  |_|          
+"
+
+
+
+
+
+
+
+echo "$(tput setaf 6) `center "Welcome back, $me!"`"
+echo "$(tput setaf 6) `center "$(date +"%A, %d %B %Y, %T")"`"
+
+echo "$(tput setaf 2)
+   .~~.   .~~.    `hostname` 
+  '. \ ' ' / .'   `uname -srmo`$(tput setaf 1)
+   .~ .~~~..~.    
+  : .~.'~'.~. :   Uptime.............: ${uptime}
+ ~ (   ) (   ) ~  Memory.............: $(extend "$(free -m | awk 'NR==2 { printf "Total: %sMB, Used: %sMB, Free: %sMB",$2,$3,$4; }')")
+( : '~'.~.'~' : ) Load Averages......: ${one}, ${five}, ${fifteen} (1, 5, 15 min)
+ ~ .~ (   ) ~. ~  Running Processes..: `ps ax | wc -l | tr -d " "`
+  (  : '~' :  )   Public IP..........: ${publicip}
+   '~ .~~~. ~'    Weather............: `curl -s "http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=EUR|gr|heraklion" | sed -n '/Currently:/ s/.*: \(.*\): \([0-9]*\)\([CF]\).*/\2°\3, \1/p'`
+       '~'	  CPU Temp...........: $(extend "$(/opt/vc/bin/vcgencmd measure_temp | cut -c "6-9")ºC")
+		  OpenVpn Clients....: ${vpnclients}
+$(tput sgr0)"
